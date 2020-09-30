@@ -75,4 +75,7 @@ function validatePostId(req, res, next) {
   // do your magic!
 }
 
+// endpoints
+server.use("/api/posts", validatePostId, postsRouter);
+
 module.exports = router;
