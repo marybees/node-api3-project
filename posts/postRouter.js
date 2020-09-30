@@ -18,7 +18,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:id", (req, res) => {
-  Posts.findById(req.params.id)
+  Posts.getById(req.params.id)
     .then((post) => {
       if (post) {
         res.status(200).json(post);
@@ -35,7 +35,6 @@ router.get("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  // do your magic!
   Posts.remove(req.params.id)
     .then((count) => {
       if (count > 0) {
@@ -70,7 +69,6 @@ router.put("/:id", (req, res) => {
 });
 
 // custom middleware
-
 function validatePostId(req, res, next) {
   // do your magic!
 }

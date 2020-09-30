@@ -5,8 +5,7 @@ const Users = require("./userDb");
 const router = express.Router();
 
 router.post("/", (req, res) => {
-  // do your magic!
-  Users.add(req.body)
+  Users.insert(req.body)
     .then((user) => {
       res.status(201).json(user);
     })
@@ -19,10 +18,9 @@ router.post("/", (req, res) => {
 });
 
 router.post("/:id/posts", (req, res) => {
-  // do your magic!
   const userInfo = { ...req.body, user_id: req.params.id };
 
-  Users.add(userInfo)
+  Users.insert(userInfo)
     .then((user) => {
       res.status(210).json(user);
     })
@@ -48,7 +46,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:id", (req, res) => {
-  Users.findById(req.params.id)
+  Users.getById(req.params.id)
     .then((user) => {
       if (user) {
         res.status(200).json(user);
@@ -114,7 +112,6 @@ router.put("/:id", (req, res) => {
 //custom middleware
 
 //endpoints that inlude id param (ex: /api/users/:id)
-
 function validateUserId(req, res, next) {
   const id = /:id
   if (req.headers.id === id) {
@@ -158,6 +155,6 @@ function validatePost(req, res, next) {
 }
 
 // endpoints
-server.use("/api/posts", validateUserId, validateUser, validatePost, postsRouter);
+server.use("/api/user", validateUserId, validateUser, validatePost, postsRouter);
 
 module.exports = router;
