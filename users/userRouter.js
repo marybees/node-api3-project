@@ -113,27 +113,37 @@ router.put("/:id", (req, res) => {
 
 //endpoints that inlude id param (ex: /api/users/:id)
 function validateUserId(req, res, next) {
-  const id = /:id
-  if (req.headers.id === id) {
-    req.id = id;
-    next();
-  } else {
-    res.satus(404).json({ errorMessage: "Incorrect User Id" });
-  }
+  Users.getById(req.params.id)
+    .then((data) => {
+      if (!data) {
+        res.satus(404).json({ errorMessage: "Incorrect User Id" });
+      } else {
+        req.user = data;
+      }
+      next();
+    })
+    .catch((data) => res.status(500).json({ error: "Something went wrong." }));
 }
 
 // validateUser validates the body on a request to create a new user
 // if the request body is missing, cancel the request and respond with status 400 and { message: "missing user data" }
 // if the request body is missing the required name field, cancel the request and respond with status 400 and { message: "missing required name field" }
 function validateUser(req, res, next) {
-  function (user, name) {
-    if (req.body.Includes(user) && req.body.Includes(name) {
-      next();
-    } if (req.body.user !== user) {
-      res.satus(400).json({ errorMessage: "Missing user data" });
-    } else {
-      res.satus(400).json({ errorMessage: "Missing required ame field" });
-    }
+  if (req.body && req.body.name) {
+    next();
+  } else if (!req.body) {
+    res.satus(400).json({ errorMessage: "Missing user data" });
+  } else if (!req.body.name) {
+    res.satus(400).json({ errorMessage: "Missing required ame field" });
+  } else {
+    Users.insert(req.body)
+      .then((data) => {
+        req.body = data;
+        next();
+      })
+      .catch((data) => {
+        res.status(500).json({ error: "Something went wrong." });
+      });
   }
 }
 
@@ -141,20 +151,21 @@ function validateUser(req, res, next) {
 // if the request body is missing, cancel the request and respond with status 400 and { message: "missing post data" }
 // if the request body is missing the required text field, cancel the request and respond with status 400 and { message: "missing required text field" }
 function validatePost(req, res, next) {
-  function() {
-    if (req.body && req.body.text) {
-      next();
-    } if (req.body === "") {
-      res.satus(400).json({ errorMessage: "Missing post data" });
-    } else if {
-      res.satus(400).json({ errorMessage: "Missing required text field" });
-    } else {
-      //cancel
-    }
+  if (!req.body) {
+    res.status(400).json({ message: "missing post data" });
+  } else if (!req.body.text) {
+    res.status(400).json({ message: "missing required text field" });
+  } else {
+    Posts.insert({ ...req.body, user_id: req.params.id })
+      .then((data) => {
+        req.post = data;
+        next();
+      })
+      .catch((data) => {
+        console.log(data);
+        res.status(500).json({ error: "Something went wrong." });
+      });
   }
 }
-
-// endpoints
-server.use("/api/user", validateUserId, validateUser, validatePost, postsRouter);
 
 module.exports = router;
